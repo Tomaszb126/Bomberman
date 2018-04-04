@@ -4,9 +4,14 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Engine/StaticMesh.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Bomb.h"
 #include "Engine/World.h"
 #include "ParticleDefinitions.h"
+#include "MyPawnMovementComponent.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -14,19 +19,48 @@ AMyPawn::AMyPawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	//AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Comp"));
+	// RootComponent
+	USphereComponent* SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Root Comp"));
+	RootComponent = SphereComponent;
+	SphereComponent->InitSphereRadius(40.0f);
+	SphereComponent->SetCollisionProfileName(TEXT("Pawn"));
 
+	// CameraComponent
 	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Our Camera"));
-
-	OurVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Our Mesh"));
-
 	OurCamera->SetupAttachment(RootComponent);
 	OurCamera->SetRelativeLocation(FVector(-100.0f, 0.0f, 700.0f));
 	OurCamera->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f));
 
-	OurVisibleComponent->SetupAttachment(RootComponent);
+	// StaticMesh
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Our Mesh"));
+	StaticMesh->SetupAttachment(RootComponent);
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> PawnMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+	if (PawnMeshAsset.Succeeded()) {
+		StaticMesh->SetStaticMesh(PawnMeshAsset.Object);
+		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
+		StaticMesh->SetWorldScale3D(FVector(0.8f));
+	}
+
+	// Create a particle system that we can activate or deactivate
+	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
+	OurParticleSystem->SetupAttachment(StaticMesh);
+	OurParticleSystem->bAutoActivate = false;
+	OurParticleSystem->SetRelativeLocation(FVector(-20.0f, 0.0f, 20.0f));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Game/StarterContent/Particles/P_Fire.P_Fire"));
+	if (ParticleAsset.Succeeded())
+	{
+		OurParticleSystem->SetTemplate(ParticleAsset.Object);
+	}
+
+	// Take control of the default player
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	// Create an instance of our movement component, and tell it to update our root component.
+	OurMovementComponent = CreateDefaultSubobject<UMyPawnMovementComponent>(TEXT("CustomMovementComponent"));
+	OurMovementComponent->UpdatedComponent = RootComponent;
 }
 
 // Called when the game starts or when spawned
@@ -41,13 +75,6 @@ void AMyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	{
-		if (!CurrentVelocity.IsZero()) {
-			FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-			SetActorLocation(NewLocation);
-		}
-	}
-
 }
 
 // Called to bind functionality to input
@@ -55,23 +82,36 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	InputComponent->BindAxis("MoveForward", this, &AMyPawn::Move_XAxis);
-	InputComponent->BindAxis("MoveRight", this, &AMyPawn::Move_YAxis);
+	InputComponent->BindAxis("MoveForward", this, &AMyPawn::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &AMyPawn::MoveRight);
 
 	InputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AMyPawn::PlaceBomb);
 	InputComponent->BindAction("Explosion", IE_Pressed, this, &AMyPawn::CauseExplosion);
 
 }
 
-void AMyPawn::Move_XAxis(float AxisValue)
+UPawnMovementComponent* AMyPawn::GetMovementComponent() const
 {
-	CurrentVelocity.X = FMath::Clamp(AxisValue, -1.0f, 1.0f) * Speed;
+	return OurMovementComponent;
 }
 
-void AMyPawn::Move_YAxis(float AxisValue)
+void AMyPawn::MoveForward(float AxisValue)
 {
+	if (OurMovementComponent && (OurMovementComponent->UpdatedComponent == RootComponent))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("movex"));
 
-	CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * Speed;
+		OurMovementComponent->AddInputVector(GetActorForwardVector() * AxisValue);
+	}
+}
+
+void AMyPawn::MoveRight(float AxisValue)
+{
+	if (OurMovementComponent && (OurMovementComponent->UpdatedComponent == RootComponent))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("movey"));
+		OurMovementComponent->AddInputVector(GetActorRightVector() * AxisValue);
+	}
 }
 
 void AMyPawn::PlaceBomb()
@@ -84,5 +124,9 @@ void AMyPawn::PlaceBomb()
 
 void AMyPawn::CauseExplosion()
 {
-	UParticleSystem* PS = CreateDefaultSubobject<UParticleSystem>(TEXT("Explosion"));
+	UE_LOG(LogTemp, Warning, TEXT("Granat bum"));
+	if (OurParticleSystem && OurParticleSystem->Template)
+	{
+		OurParticleSystem->ToggleActive();
+	}
 }

@@ -27,13 +27,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* OurVisibleComponent;
+		UStaticMeshComponent* StaticMesh;
 
-	UPROPERTY(EditAnywhere)
-		float Speed = 500.0f;
+	UParticleSystemComponent* OurParticleSystem;
+	class UMyPawnMovementComponent* OurMovementComponent;
 
-	void Move_XAxis(float AxisValue);
-	void Move_YAxis(float AxisValue);
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
 	void PlaceBomb();
 	void CauseExplosion();
 
