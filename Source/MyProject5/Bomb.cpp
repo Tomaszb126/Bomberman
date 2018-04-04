@@ -4,6 +4,7 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "TimerManager.h"
 
 // Sets default values
@@ -20,6 +21,8 @@ ABomb::ABomb()
 	//SetLifeSpan(3.0f);
 
 	RootComponent = mesh;
+
+	//this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +42,8 @@ void ABomb::Tick(float DeltaTime)
 
 void ABomb::BombExplode()
 {
+	// Create explosion
+
 	this->Destroy();
 }
 

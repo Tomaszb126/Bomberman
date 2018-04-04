@@ -4,22 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Bomb.generated.h"
+#include "DestructibleWall.generated.h"
 
 UCLASS()
-class MYPROJECT5_API ABomb : public AActor
+class MYPROJECT5_API ADestructibleWall : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABomb();
+	ADestructibleWall();
 
-	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* mesh;
-
-	UPROPERTY(EditAnywhere)
-		int Lifetime = 3;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,7 +22,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void BombExplode();
-	UParticleSystemComponent* OurParticleSystem;
 
+	UStaticMeshComponent* StaticMesh;
+	
 };

@@ -116,9 +116,10 @@ void AMyPawn::MoveRight(float AxisValue)
 
 void AMyPawn::PlaceBomb()
 {
+	FVector BombPosition = FVector(0.0f, 0.0f, -50.0f) + GetActorLocation();
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	GetWorld()->SpawnActor<ABomb>(GetActorLocation(), Rotation, SpawnInfo);
+	GetWorld()->SpawnActor<ABomb>(BombPosition, Rotation, SpawnInfo);
 
 }
 
