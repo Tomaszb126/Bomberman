@@ -99,7 +99,6 @@ void AMyPawn::MoveForward(float AxisValue)
 {
 	if (OurMovementComponent && (OurMovementComponent->UpdatedComponent == RootComponent))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("movex"));
 
 		OurMovementComponent->AddInputVector(GetActorForwardVector() * AxisValue);
 	}
@@ -109,7 +108,6 @@ void AMyPawn::MoveRight(float AxisValue)
 {
 	if (OurMovementComponent && (OurMovementComponent->UpdatedComponent == RootComponent))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("movey"));
 		OurMovementComponent->AddInputVector(GetActorRightVector() * AxisValue);
 	}
 }
@@ -125,7 +123,6 @@ void AMyPawn::PlaceBomb()
 
 void AMyPawn::CauseExplosion()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Granat bum"));
 	if (OurParticleSystem && OurParticleSystem->Template)
 	{
 		OurParticleSystem->ToggleActive();

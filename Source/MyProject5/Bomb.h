@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "DestructibleComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
@@ -29,5 +29,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void BombExplode();
 	UParticleSystemComponent* OurParticleSystem;
-
+	UDestructibleComponent* DestructibleComponent;
 };
