@@ -3,5 +3,6 @@ Binaries/
 */DerivedDataCache/
 Intermediate/
 Saved/
-Content/StarterContent/
+*/StarterContent/
 *.VC.db
+*.VC.opendb
