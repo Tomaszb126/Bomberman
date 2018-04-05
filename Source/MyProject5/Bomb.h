@@ -19,7 +19,14 @@ public:
 		UStaticMeshComponent* mesh;
 
 	UPROPERTY(EditAnywhere)
+		float BlastDistance = 100.0f;
+
+	UPROPERTY(EditAnywhere)
 		int Lifetime = 3;
+	float ElapsedTime = 0.0f;
+	bool Exploded = false;
+	bool CollisionOvelap = true;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

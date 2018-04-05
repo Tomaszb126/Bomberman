@@ -34,10 +34,15 @@ public:
 
 	virtual UPawnMovementComponent* GetMovementComponent() const override;
 
+	float GetSpeedMultiplier() { return Speed; }
+
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 	void PlaceBomb();
 	void CauseExplosion();
+
+	int MaxBombs = 2;
+	float Speed = 1.0f;
 
 	FVector CurrentVelocity;
 	

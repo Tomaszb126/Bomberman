@@ -13,9 +13,11 @@ UCLASS()
 class MYPROJECT5_API UMyPawnMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
-	
+
+	float SpeedMultiplier = 1.0f;
 	
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-	
+	void SetSpeedMultiplier(float Speed) { SpeedMultiplier += Speed; }
+
 };

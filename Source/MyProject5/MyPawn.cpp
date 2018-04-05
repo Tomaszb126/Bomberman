@@ -12,14 +12,13 @@
 #include "Engine/World.h"
 #include "ParticleDefinitions.h"
 #include "MyPawnMovementComponent.h"
+#include "EngineUtils.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	// RootComponent
 	USphereComponent* SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Root Comp"));
@@ -41,7 +40,7 @@ AMyPawn::AMyPawn()
 	if (PawnMeshAsset.Succeeded()) {
 		StaticMesh->SetStaticMesh(PawnMeshAsset.Object);
 		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-		StaticMesh->SetWorldScale3D(FVector(0.8f));
+		StaticMesh->SetWorldScale3D(FVector(1.0f));
 	}
 
 	// Create a particle system that we can activate or deactivate
@@ -60,6 +59,7 @@ AMyPawn::AMyPawn()
 
 	// Create an instance of our movement component, and tell it to update our root component.
 	OurMovementComponent = CreateDefaultSubobject<UMyPawnMovementComponent>(TEXT("CustomMovementComponent"));
+	OurMovementComponent->bConstrainToPlane = true;
 	OurMovementComponent->UpdatedComponent = RootComponent;
 }
 
@@ -99,8 +99,7 @@ void AMyPawn::MoveForward(float AxisValue)
 {
 	if (OurMovementComponent && (OurMovementComponent->UpdatedComponent == RootComponent))
 	{
-
-		OurMovementComponent->AddInputVector(GetActorForwardVector() * AxisValue);
+		OurMovementComponent->AddInputVector(GetActorForwardVector() * AxisValue + FVector(0.0f, 0.0f,-1.0f));
 	}
 }
 
@@ -114,6 +113,12 @@ void AMyPawn::MoveRight(float AxisValue)
 
 void AMyPawn::PlaceBomb()
 {
+	int BombCount = 0;
+	for (TActorIterator<ABomb> BombItr(GetWorld()); BombItr; ++BombItr) {
+		BombCount++;
+	}
+	if (BombCount >= MaxBombs) return ;
+
 	FVector BombPosition = FVector(0.0f, 0.0f, -50.0f) + GetActorLocation();
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;

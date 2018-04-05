@@ -13,7 +13,7 @@ void UMyPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	}
 
 	// Get (and then clear) the movement vector that we set in ACollidingPawn::Tick
-	FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * 500.0f;
+	FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * 500.0f * SpeedMultiplier;
 	if (!DesiredMovementThisFrame.IsNearlyZero())
 	{
 		FHitResult Hit;
