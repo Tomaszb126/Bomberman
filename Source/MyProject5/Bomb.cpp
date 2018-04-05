@@ -27,11 +27,12 @@ ABomb::ABomb()
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("BOMB"));
 	RootComponent = DestructibleComponent;
 	DestructibleComponent->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
+	DestructibleComponent->SetMobility(EComponentMobility::Movable);
 	//Mesh
 	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Sphere_Bomb_DM.Shape_Sphere_Bomb_DM'"));
 	if (DestructibleMeshAsset.Succeeded()) {
 
-		DestructibleComponent->SetWorldScale3D(FVector(0.7f));
+		DestructibleComponent->SetWorldScale3D(FVector(0.6f));
 		DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
 	}
 
@@ -68,6 +69,15 @@ void ABomb::Tick(float DeltaTime)
 		CollisionOvelap = false;
 		DestructibleComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	}
+	/*
+	if (ElapsedTime >= 2) {
+		ConstructorHelpers::FObjectFinder<UMaterialInterface> DestructibleMeshAsset(TEXT("Material'/Game/M_Metal_Steel_Red.M_Metal_Steel_Red'"));
+		if (DestructibleMeshAsset.Succeeded()) {
+			DestructibleComponent->SetMaterial(0, DestructibleMeshAsset.Object);
+			DestructibleComponent->SetWorldScale3D(FVector(0.8f));
+		}
+	}
+	*/
 	if (ElapsedTime >= Lifetime && !Exploded) BombExplode();
 	if (ElapsedTime >= 4) this->Destroy();
 
