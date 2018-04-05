@@ -46,6 +46,13 @@ void APickup::Tick(float DeltaTime)
 void APickup::OnPlayerPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor->IsA(AMyPawn::StaticClass()))) {
+		AMyPawn* Player = Cast<AMyPawn>(OtherActor);
+		Player->MaxBombs++;
+
+		UE_LOG(LogTemp, Warning, TEXT("Granat dsadbum %d"), Player->MaxBombs);
+		FString pickup = FString::Printf(TEXT("Picked up bomb upgrade. Max bombs: %d"), Player->MaxBombs);
+		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, pickup);
+		/*
 		for (TActorIterator<AMyPawn> PlayerItr(GetWorld()); PlayerItr; ++PlayerItr) {
 			PlayerItr->MaxBombs++;
 
@@ -53,6 +60,7 @@ void APickup::OnPlayerPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			FString pickup = FString::Printf(TEXT("Picked up bomb upgrade. Max bombs: %d"), PlayerItr->MaxBombs);
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, pickup);
 		}
+		*/
 		Destroy();
 	}
 }

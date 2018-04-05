@@ -20,6 +20,8 @@ ADestructibleWall::ADestructibleWall()
 	//Mesh
 	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Cube_Brick_DM.Shape_Cube_Brick_DM'"));
 	if (DestructibleMeshAsset.Succeeded()) DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
+
+	DestructibleComponent->SetWorldScale3D(FVector(1.0f));
 }
 
 // Called when the game starts or when spawned

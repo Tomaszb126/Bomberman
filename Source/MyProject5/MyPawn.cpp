@@ -25,6 +25,7 @@ AMyPawn::AMyPawn()
 	RootComponent = SphereComponent;
 	SphereComponent->InitSphereRadius(40.0f);
 	SphereComponent->SetCollisionProfileName(TEXT("Pawn"));
+	//SphereComponent->SetWorldScale3D(FVector(0.8f));
 
 	// CameraComponent
 	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Our Camera"));
@@ -40,7 +41,7 @@ AMyPawn::AMyPawn()
 	if (PawnMeshAsset.Succeeded()) {
 		StaticMesh->SetStaticMesh(PawnMeshAsset.Object);
 		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-		StaticMesh->SetWorldScale3D(FVector(1.0f));
+		StaticMesh->SetWorldScale3D(FVector(0.8f));
 	}
 
 	// Create a particle system that we can activate or deactivate
