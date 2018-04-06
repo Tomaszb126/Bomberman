@@ -18,11 +18,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* mesh;
 
-	UPROPERTY(EditAnywhere)
-		float BlastDistance = 100.0f;
-
-	UPROPERTY(EditAnywhere)
-		int Lifetime = 3;
+	int BlastDistance = 1;
+	int Lifetime = 3;
 	float ElapsedTime = 0.0f;
 	bool Exploded = false;
 	bool CollisionOvelap = true;
@@ -35,6 +32,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void BombExplode();
+	void IncreaseBlastDistance(int IncreaseBy) { BlastDistance += IncreaseBy; }
 	UParticleSystemComponent* OurParticleSystem;
 	UDestructibleComponent* DestructibleComponent;
 };

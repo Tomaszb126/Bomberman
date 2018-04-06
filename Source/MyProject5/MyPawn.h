@@ -11,6 +11,9 @@ class MYPROJECT5_API AMyPawn : public APawn
 {
 	GENERATED_BODY()
 
+	int MaxBombs = 2;
+	int BombBlastDistance = 1;
+
 public:
 	// Sets default values for this pawn's properties
 	AMyPawn();
@@ -34,15 +37,14 @@ public:
 
 	virtual UPawnMovementComponent* GetMovementComponent() const override;
 
-	float GetSpeedMultiplier() { return Speed; }
-
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 	void PlaceBomb();
 	void CauseExplosion();
+	int GetBombBlastDistance() { return BombBlastDistance; }
+	void IncreaseBombBlastDistance(int IncreaseBy) { BombBlastDistance += IncreaseBy; }
+	void IncreaseMaxBombs(int IncreaseBy) { MaxBombs += IncreaseBy; }
 
-	int MaxBombs = 2;
-	float Speed = 1.0f;
 
 	FVector CurrentVelocity;
 	

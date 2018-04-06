@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "MyPawn.h"
 #include "Pickup.generated.h"
-
 UCLASS()
 class MYPROJECT5_API APickup : public AActor
 {
@@ -26,7 +26,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* MeshComponent;
 
+	virtual void OnPlayerPickup(AMyPawn* Player);
+
 	UFUNCTION()
-	void OnPlayerPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
+	void OnPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	USceneComponent* Root;
 };

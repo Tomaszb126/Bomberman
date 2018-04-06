@@ -123,6 +123,8 @@ void AMyPawn::PlaceBomb()
 	FVector BombPosition = FVector(0.0f, 0.0f, -50.0f) + GetActorLocation();
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
+	//ABomb* NewBomb = GetWorld()->SpawnActor<ABomb>(BombPosition, Rotation, SpawnInfo);
+	//NewBomb->IncreaseBlastDistance(1);
 	GetWorld()->SpawnActor<ABomb>(BombPosition, Rotation, SpawnInfo);
 
 }

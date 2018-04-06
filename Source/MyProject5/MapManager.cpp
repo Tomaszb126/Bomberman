@@ -26,7 +26,7 @@ void AMapManager::BeginPlay()
 			if ((x == 1 && y == 2) || x == 2 && y == 1)
 				continue;
 			
-			FVector Position = FVector(x*TileSize, y*TileSize, 0.0f) + MapOrigin;
+			FVector Position = FVector(y*TileSize, x*TileSize, 0.0f) + MapOrigin;
 			FRotator Rotation(0.0f, 0.0f, 0.0f);
 			FActorSpawnParameters SpawnInfo;
 

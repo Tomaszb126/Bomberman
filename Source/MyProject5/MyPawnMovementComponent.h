@@ -18,6 +18,6 @@ class MYPROJECT5_API UMyPawnMovementComponent : public UPawnMovementComponent
 	
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-	void SetSpeedMultiplier(float Speed) { SpeedMultiplier += Speed; }
+	void IncreaseSpeedMultiplier(float Speed) { SpeedMultiplier += Speed; }
 
 };

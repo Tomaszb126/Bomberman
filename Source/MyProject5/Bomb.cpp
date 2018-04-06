@@ -65,7 +65,7 @@ void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	ElapsedTime += DeltaTime;
-	if (ElapsedTime >= 1 && CollisionOvelap) {
+	if (ElapsedTime >= 0.5f && CollisionOvelap) {
 		CollisionOvelap = false;
 		DestructibleComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	}
@@ -79,7 +79,7 @@ void ABomb::Tick(float DeltaTime)
 	}
 	*/
 	if (ElapsedTime >= Lifetime && !Exploded) BombExplode();
-	if (ElapsedTime >= 4) this->Destroy();
+	if (ElapsedTime >= 4.0f) this->Destroy();
 
 }
 void ABomb::BombExplode()
@@ -95,7 +95,7 @@ void ABomb::BombExplode()
 	for (TActorIterator<ADestructibleWall> it(GetWorld()); it; ++it)
 	{
 
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation() + FVector(0.0f,0.0f,-20.0f), BlastDistance, UDamageType::StaticClass(), TArray<AActor*>());
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation() + FVector(0.0f,0.0f,-20.0f), BlastDistance * 100.0f, UDamageType::StaticClass(), TArray<AActor*>());
 	}
 	
 	Exploded = true;
