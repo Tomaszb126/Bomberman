@@ -14,7 +14,9 @@ class MYPROJECT5_API APickup_Speed : public APickup
 {
 	GENERATED_BODY()
 	
-	
-	
+public:
+	APickup_Speed();
+
+	void OnPlayerPickup(AMyPawn* Player) override;
 	
 };

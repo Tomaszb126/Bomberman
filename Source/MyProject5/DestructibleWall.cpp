@@ -9,6 +9,8 @@
 #include "DestructibleMesh.h"
 #include "Engine/World.h"
 #include "Pickup_Bombs.h"
+#include "Pickup_Speed.h"
+#include "Bomb.h"
 
 // Sets default values
 ADestructibleWall::ADestructibleWall()
@@ -18,9 +20,7 @@ ADestructibleWall::ADestructibleWall()
 
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DESTRUCTIBLE_WALL"));
 	RootComponent = DestructibleComponent;
-	DestructibleComponent->OnComponentFracture.AddDynamic(this, &ADestructibleWall::SpawnPickup);
-	//DestructibleComponent->OnComponentDeactivated.AddDynamic(this, &ADestructibleWall::SpawnPickup);
-	//Box->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnPickup);
+	//DestructibleComponent->OnComponentFracture.AddDynamic(this, &ADestructibleWall::SpawnPickup);
 
 	//Mesh
 	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Cube_Brick_DM.Shape_Cube_Brick_DM'"));
@@ -49,12 +49,28 @@ void ADestructibleWall::SpawnPickup(const FVector& HitPoint, const FVector& HitD
 		Fractured = true;
 		UE_LOG(LogTemp, Warning, TEXT("Wall destroyed, spawn pickup"));
 
-		FVector Position = FVector(0.0f, 0.0f, 10.0f) + GetActorLocation();
+		FVector Position = FVector(0.0f, 0.0f, 20.0f) + GetActorLocation();
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters SpawnInfo;
-		int ShouldSpawn = FMath::RandRange(0, 100);
-		if (ShouldSpawn > 80)
+		int ShouldSpawn = FMath::RandRange(1, 100);
+		if (ShouldSpawn < 90) return ;
+		else if (ShouldSpawn >= 90 && ShouldSpawn <=95)
 			GetWorld()->SpawnActor<APickup_Bombs>(Position, Rotation, SpawnInfo);
+		else if (ShouldSpawn >= 95 && ShouldSpawn <= 100)
+			GetWorld()->SpawnActor<APickup_Speed>(Position, Rotation, SpawnInfo);
+	}
+}
+
+void ADestructibleWall::SpawnExit(const FVector & HitPoint, const FVector & HitDirection)
+{
+	if (!Fractured) {
+		Fractured = true;
+		UE_LOG(LogTemp, Warning, TEXT("Wall destroyed, spawn exit"));
+
+		FVector Position = FVector(0.0f, 0.0f, 0.0f) + GetActorLocation();
+		FRotator Rotation(0.0f, 0.0f, 0.0f);
+		FActorSpawnParameters SpawnInfo;
+		GetWorld()->SpawnActor<ABomb>(Position, Rotation, SpawnInfo);
 	}
 }
 

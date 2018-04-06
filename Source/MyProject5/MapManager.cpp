@@ -5,6 +5,8 @@
 #include "IndestructibleWall.h"
 #include "MyPawn.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "Containers/Array.h"
 
 
 // Sets default values
@@ -20,6 +22,7 @@ void AMapManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Create map
 	for(int x = 0; x < MapSizeX; x++)
 		for (int y = 0; y < MapSizeY; y++)
 		{
@@ -40,6 +43,26 @@ void AMapManager::BeginPlay()
 					GetWorld()->SpawnActor<ADestructibleWall>(Position, Rotation, SpawnInfo);
 			}
 		}
+
+	TArray<AActor*> DestructibleWalls;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADestructibleWall::StaticClass(), DestructibleWalls);
+	int DestructibleWallCount = DestructibleWalls.Num();
+	//int ExitIndex = FMath::RandRange(0, DestructibleWallCount - 1);
+	int ExitIndex = 5;
+	UE_LOG(LogTemp, Warning, TEXT("DesWall count: %d ExitWallIndex: %d"), DestructibleWallCount, ExitIndex);
+
+	for (int i = 0; i < DestructibleWallCount; i++)
+	{
+		ADestructibleWall* DestructableWall = Cast<ADestructibleWall>(DestructibleWalls[i]);
+		if (i != ExitIndex)
+		{
+			DestructableWall->DestructibleComponent->OnComponentFracture.AddDynamic(DestructableWall, &ADestructibleWall::SpawnPickup);
+		}
+		else
+		{
+			DestructableWall->DestructibleComponent->OnComponentFracture.AddDynamic(DestructableWall, &ADestructibleWall::SpawnExit);
+		}
+	}
 }
 
 // Called every frame

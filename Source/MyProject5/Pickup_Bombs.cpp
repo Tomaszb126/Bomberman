@@ -9,9 +9,9 @@
 
 APickup_Bombs::APickup_Bombs() : APickup() 
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Bush.SM_Bush'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_MatPreviewMesh_02.SM_MatPreviewMesh_02'"));
 	if (StaticMeshAsset.Succeeded()) {
-		MeshComponent->SetWorldScale3D(FVector(0.4f));
+		MeshComponent->SetWorldScale3D(FVector(0.2f));
 		MeshComponent->SetStaticMesh(StaticMeshAsset.Object);
 	}
 }
@@ -19,9 +19,7 @@ APickup_Bombs::APickup_Bombs() : APickup()
 void APickup_Bombs::OnPlayerPickup(AMyPawn* Player)
 {
 	Player->IncreaseMaxBombs(1);
-	Player->OurMovementComponent->IncreaseSpeedMultiplier(0.5f);
-	Player->IncreaseBombBlastDistance(1);
-	FString pickup = FString::Printf(TEXT("Picked up upgrade."));
+	FString pickup = FString::Printf(TEXT("Picked up bomb upgrade"));
 	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, pickup);
 
 }

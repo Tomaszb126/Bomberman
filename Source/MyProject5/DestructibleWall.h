@@ -11,14 +11,17 @@ class MYPROJECT5_API ADestructibleWall : public AActor
 {
 	GENERATED_BODY()
 
-	UFUNCTION()
-	void SpawnPickup(const FVector& HitPoint, const FVector& HitDirection);
 
 	bool Fractured = false;
 	
 public:	
 	// Sets default values for this actor's properties
 	ADestructibleWall();
+
+	UFUNCTION()
+	void SpawnPickup(const FVector& HitPoint, const FVector& HitDirection);
+	UFUNCTION()
+	void SpawnExit(const FVector& HitPoint, const FVector& HitDirection);
 
 protected:
 	// Called when the game starts or when spawned
