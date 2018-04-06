@@ -95,7 +95,7 @@ void ABomb::BombExplode()
 	for (TActorIterator<ADestructibleWall> it(GetWorld()); it; ++it)
 	{
 
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation() + FVector(0.0f,0.0f,-20.0f), BlastDistance * 100.0f, UDamageType::StaticClass(), TArray<AActor*>());
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation() + FVector(0.0f,0.0f,20.0f), BlastDistance * 100.0f, UDamageType::StaticClass(), TArray<AActor*>());
 	}
 	
 	Exploded = true;

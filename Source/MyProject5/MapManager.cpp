@@ -47,8 +47,8 @@ void AMapManager::BeginPlay()
 	TArray<AActor*> DestructibleWalls;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADestructibleWall::StaticClass(), DestructibleWalls);
 	int DestructibleWallCount = DestructibleWalls.Num();
-	//int ExitIndex = FMath::RandRange(0, DestructibleWallCount - 1);
-	int ExitIndex = 5;
+	int ExitIndex = FMath::RandRange(0, DestructibleWallCount - 1);
+	//int ExitIndex = 1;
 	UE_LOG(LogTemp, Warning, TEXT("DesWall count: %d ExitWallIndex: %d"), DestructibleWallCount, ExitIndex);
 
 	for (int i = 0; i < DestructibleWallCount; i++)

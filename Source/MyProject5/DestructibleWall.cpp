@@ -10,7 +10,7 @@
 #include "Engine/World.h"
 #include "Pickup_Bombs.h"
 #include "Pickup_Speed.h"
-#include "Bomb.h"
+#include "Pickup_Exit.h"
 
 // Sets default values
 ADestructibleWall::ADestructibleWall()
@@ -26,7 +26,7 @@ ADestructibleWall::ADestructibleWall()
 	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Cube_Brick_DM.Shape_Cube_Brick_DM'"));
 	if (DestructibleMeshAsset.Succeeded()) DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
 
-	DestructibleComponent->SetWorldScale3D(FVector(1.0f));
+	DestructibleComponent->SetWorldScale3D(FVector(0.999f));
 }
 
 // Called when the game starts or when spawned
@@ -70,7 +70,7 @@ void ADestructibleWall::SpawnExit(const FVector & HitPoint, const FVector & HitD
 		FVector Position = FVector(0.0f, 0.0f, 0.0f) + GetActorLocation();
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters SpawnInfo;
-		GetWorld()->SpawnActor<ABomb>(Position, Rotation, SpawnInfo);
+		GetWorld()->SpawnActor<APickup_Exit>(Position, Rotation, SpawnInfo);
 	}
 }
 

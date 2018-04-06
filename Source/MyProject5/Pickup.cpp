@@ -21,7 +21,7 @@ APickup::APickup()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 
-	UBoxComponent* Box = CreateDefaultSubobject<UBoxComponent>(TEXT("PickupBox"));
+	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("PickupBox"));
 	Box->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	Box->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnPickup);
 	Box->SetupAttachment(RootComponent);
