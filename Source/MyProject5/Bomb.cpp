@@ -11,6 +11,10 @@
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "DestructibleWall.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/EngineTypes.h"
+#include "Engine.h"
+#include "Containers/UnrealString.h"
 
 // Sets default values
 ABomb::ABomb()
@@ -18,17 +22,11 @@ ABomb::ABomb()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bomb Mesh"));
-
-	//ConstructorHelpers::FObjectFinder<UStaticMesh> BombMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
-	//mesh->SetStaticMesh(BombMesh.Object);
-
-
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("BOMB"));
 	RootComponent = DestructibleComponent;
 	DestructibleComponent->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
 	DestructibleComponent->SetMobility(EComponentMobility::Movable);
-	//Mesh
+
 	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Sphere_Bomb_DM.Shape_Sphere_Bomb_DM'"));
 	if (DestructibleMeshAsset.Succeeded()) {
 
@@ -36,21 +34,11 @@ ABomb::ABomb()
 		DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
 	}
 
-	//SetLifeSpan(3.0f);
-	// Create a particle system that we can activate or deactivate
-	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
-	OurParticleSystem->SetupAttachment(DestructibleComponent);
-	OurParticleSystem->bAutoActivate = false;
-	OurParticleSystem->SetRelativeLocation(FVector(-20.0f, 0.0f, 40.0f));
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
 	if (ParticleAsset.Succeeded())
 	{
-		OurParticleSystem->SetTemplate(ParticleAsset.Object);
+		ParticleSystem = ParticleAsset.Object;
 	}
-
-	//RootComponent = mesh;
-
-	//this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
 // Called when the game starts or when spawned
@@ -86,20 +74,64 @@ void ABomb::BombExplode()
 {
 	// Create explosion
 	UE_LOG(LogTemp, Warning, TEXT("Granat dsadbum"));
-	//DestructibleComponent->ApplyDamage(100.0f, GetActorLocation(), FVector(0.0f, 0.0f, -1.0f), 1.0f);
-	if (OurParticleSystem && OurParticleSystem->Template)
-	{
-		OurParticleSystem->ToggleActive();
-	}
+	DestructibleComponent->ApplyDamage(100.0f, GetActorLocation(), FVector(0.0f, 0.0f, -1.0f), 1.0f);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation() + FVector(0.0f, 0.0f, 40.0f), FRotator::ZeroRotator, true);
 
-	for (TActorIterator<ADestructibleWall> it(GetWorld()); it; ++it)
-	{
+	FVector BombOrigin, BombExtent;
+	GetActorBounds(false, BombOrigin, BombExtent);
 
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation() + FVector(0.0f,0.0f,20.0f), BlastDistance * 100.0f, UDamageType::StaticClass(), TArray<AActor*>());
-	}
-	
+	FVector Start, Direction;
+	//Forward
+	Start = GetActorLocation() + FVector(BombExtent.X, 0.0f, BombExtent.Z);
+	Direction = FVector(1.0f, 0.0f, 0.0f);
+	CauseDamageInLine(Start, Direction);
+
+	//Back
+	Start = GetActorLocation() + FVector(-BombExtent.X, 0.0f, BombExtent.Z);
+	Direction = FVector(-1.0f, 0.0f, 0.0f);
+	CauseDamageInLine(Start, Direction);
+
+	//Right
+	Start = GetActorLocation() + FVector(0.0f, BombExtent.Y, BombExtent.Z);
+	Direction = FVector(0.0f, 1.0f, 0.0f);
+	CauseDamageInLine(Start, Direction);
+
+	//Left
+	Start = GetActorLocation() + FVector(0.0f, -BombExtent.Y, BombExtent.Z);
+	Direction = FVector(0.0f, -1.0f, 0.0f);
+	CauseDamageInLine(Start, Direction);
+
 	Exploded = true;
 
+}
+
+void ABomb::CauseDamageInLine(FVector Start, FVector Direction)
+{
+	FHitResult Impact;
+	FVector End = (Direction * BlastDistance) + Start;
+	FCollisionQueryParams CollisonParams;
+
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, true);
+
+	bool isHit = GetWorld()->LineTraceSingleByChannel(Impact, Start, End, ECC_Visibility, CollisonParams);
+	if (isHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Granade hit"));
+		if (Impact.bBlockingHit)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Actor hit: %s"), *Impact.GetActor()->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Impact Point: %s"), *Impact.ImpactPoint.ToString()));
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Impact Normal: %s"), *Impact.ImpactNormal.ToString()));
+
+			FDamageEvent DamageEvent;
+			UGameplayStatics::ApplyPointDamage(Impact.GetActor(), 10.0f, GetActorLocation(), Impact, GetInstigatorController(), this, UDamageType::StaticClass());
+		}
+	}
+	for (int i = 1; i <= BlastDistance/100; i++) {
+		UE_LOG(LogTemp, Warning, TEXT("explosion boom"));
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation() + (Direction*i*100) + FVector(0.0f,0.0f,40.0f), FRotator::ZeroRotator, true);
+	}
 }
 
 

@@ -18,7 +18,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* mesh;
 
-	int BlastDistance = 1;
+	int BlastDistance = 100.0f;
 	int Lifetime = 3;
 	float ElapsedTime = 0.0f;
 	bool Exploded = false;
@@ -33,6 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void BombExplode();
 	void IncreaseBlastDistance(int IncreaseBy) { BlastDistance += IncreaseBy; }
-	UParticleSystemComponent* OurParticleSystem;
+	void CauseDamageInLine(FVector Start, FVector Direction);
 	UDestructibleComponent* DestructibleComponent;
+	UParticleSystem* ParticleSystem;
 };
