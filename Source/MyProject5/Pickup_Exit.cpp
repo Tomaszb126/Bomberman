@@ -25,7 +25,7 @@ APickup_Exit::APickup_Exit() : APickup()
 void APickup_Exit::OnPlayerPickup(AMyPawn* Player)
 {
 	FString pickup = FString::Printf(TEXT("Exit entered"));
-	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, pickup);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, pickup);
 	UGameplayStatics::OpenLevel(this, "GameEndMap");
 }
 

@@ -11,6 +11,7 @@
 #include "Pickup_Bombs.h"
 #include "Pickup_Speed.h"
 #include "Pickup_Exit.h"
+#include "Pickup_BlastRange.h"
 
 // Sets default values
 ADestructibleWall::ADestructibleWall()
@@ -18,6 +19,7 @@ ADestructibleWall::ADestructibleWall()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Create destructible component for root
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DESTRUCTIBLE_WALL"));
 	RootComponent = DestructibleComponent;
 	//DestructibleComponent->OnComponentFracture.AddDynamic(this, &ADestructibleWall::SpawnPickup);
@@ -54,6 +56,8 @@ void ADestructibleWall::SpawnPickup(const FVector& HitPoint, const FVector& HitD
 		FActorSpawnParameters SpawnInfo;
 		int ShouldSpawn = FMath::RandRange(1, 100);
 		if (ShouldSpawn < 90) return ;
+		else if (ShouldSpawn >= 85 && ShouldSpawn <= 90)
+			GetWorld()->SpawnActor<APickup_BlastRange>(Position, Rotation, SpawnInfo);
 		else if (ShouldSpawn >= 90 && ShouldSpawn <=95)
 			GetWorld()->SpawnActor<APickup_Bombs>(Position, Rotation, SpawnInfo);
 		else if (ShouldSpawn >= 95 && ShouldSpawn <= 100)

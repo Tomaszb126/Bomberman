@@ -13,6 +13,9 @@
 #include "ParticleDefinitions.h"
 #include "MyPawnMovementComponent.h"
 #include "EngineUtils.h"
+#include "DestructibleComponent.h"
+#include "DestructibleMesh.h"
+#include "Engine.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -26,7 +29,8 @@ AMyPawn::AMyPawn()
 	SphereComponent->InitSphereRadius(40.0f);
 	SphereComponent->SetCollisionProfileName(TEXT("Pawn"));
 	//SphereComponent->SetWorldScale3D(FVector(0.8f));
-
+	this->OnTakeAnyDamage.AddDynamic(this, &AMyPawn::PlayerGetHit);
+		//FTakeAnyDamageSignature, AActor*, DamagedActor, float, Damage, const class UDamageType*, DamageType, class AController*, InstigatedBy, AActor*, DamageCauser
 	// CameraComponent
 	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Our Camera"));
 	OurCamera->SetupAttachment(RootComponent);
@@ -42,17 +46,6 @@ AMyPawn::AMyPawn()
 		StaticMesh->SetStaticMesh(PawnMeshAsset.Object);
 		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
 		StaticMesh->SetWorldScale3D(FVector(0.8f));
-	}
-
-	// Create a particle system that we can activate or deactivate
-	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
-	OurParticleSystem->SetupAttachment(StaticMesh);
-	OurParticleSystem->bAutoActivate = false;
-	OurParticleSystem->SetRelativeLocation(FVector(-20.0f, 0.0f, 20.0f));
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Game/StarterContent/Particles/P_Fire.P_Fire"));
-	if (ParticleAsset.Succeeded())
-	{
-		OurParticleSystem->SetTemplate(ParticleAsset.Object);
 	}
 
 	// Take control of the default player
@@ -87,7 +80,6 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	InputComponent->BindAxis("MoveRight", this, &AMyPawn::MoveRight);
 
 	InputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AMyPawn::PlaceBomb);
-	InputComponent->BindAction("Explosion", IE_Pressed, this, &AMyPawn::CauseExplosion);
 
 }
 
@@ -129,10 +121,11 @@ void AMyPawn::PlaceBomb()
 
 }
 
-void AMyPawn::CauseExplosion()
+void AMyPawn::PlayerGetHit(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (OurParticleSystem && OurParticleSystem->Template)
-	{
-		OurParticleSystem->ToggleActive();
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Player damaged"));
+
+	FString Msg = FString::Printf(TEXT("Player killed!"));
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, Msg);
+	UGameplayStatics::OpenLevel(this, "GameEndMap");
 }
