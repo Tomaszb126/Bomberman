@@ -23,6 +23,8 @@ APickup::APickup()
 
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("PickupBox"));
 	Box->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	// Setup event for picking up object
 	Box->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnPickup);
 	Box->SetupAttachment(RootComponent);
 
@@ -46,11 +48,14 @@ void APickup::OnPlayerPickup(AMyPawn* Player)
 {
 }
 
-void APickup::OnPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APickup::OnPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor->IsA(AMyPawn::StaticClass()))) {
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) 
+		&& (OtherActor->IsA(AMyPawn::StaticClass()))) {
 
 		AMyPawn* Player = Cast<AMyPawn>(OtherActor);
+		// virtual funciton run in every derived class when player overlaps item
 		OnPlayerPickup(Player);
 
 		Destroy();

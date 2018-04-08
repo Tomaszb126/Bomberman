@@ -11,11 +11,14 @@ class MYPROJECT5_API AMyPawn : public APawn
 {
 	GENERATED_BODY()
 
-	int MaxBombs = 2;
-	float BombBlastRange = 200.0f;
-	UDestructibleComponent* DestructibleComponent;
+	int MaxBombs = 1;
+	float BombBlastRange = 100.0f;
+	class UMyPawnMovementComponent* OurMovementComponent;
+	FVector CurrentVelocity;
+
 	UFUNCTION()
-	void PlayerGetHit(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	void PlayerGetHit(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, 
+		class AController* InstigatedBy, AActor* DamageCauser);
 
 public:
 	// Sets default values for this pawn's properties
@@ -35,9 +38,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* StaticMesh;
 
-	class UMyPawnMovementComponent* OurMovementComponent;
-
-	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	UMyPawnMovementComponent* GetMyPawnMovementComponent() const;
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -46,8 +47,5 @@ public:
 	float GetBombBlastRange() { return BombBlastRange; }
 	void IncreaseMaxBombs(int IncreaseBy) { MaxBombs += IncreaseBy; }
 	int GetMaxBombs() { return MaxBombs; }
-
-
-	FVector CurrentVelocity;
-	
+	void QuitGame() { GetWorld()->GetFirstPlayerController()->ConsoleCommand("quit"); }
 };

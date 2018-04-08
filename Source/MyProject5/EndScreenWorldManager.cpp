@@ -2,6 +2,9 @@
 
 #include "EndScreenWorldManager.h"
 #include "TimerManager.h"
+#include "Classes/AIController.h"
+#include "NPCPawn.h"
+#include "Engine/World.h"
 
 
 // Sets default values
@@ -16,14 +19,13 @@ AEndScreenWorldManager::AEndScreenWorldManager()
 void AEndScreenWorldManager::BeginPlay()
 {
 	Super::BeginPlay();
-	FTimerHandle Timer;
-	//GetWorldTimerManager().SetTimer(Timer, this, &AEndScreenWorldManager::EndGame, 3.1f);
 }
 
 // Called every frame
 void AEndScreenWorldManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	ElapsedTime += DeltaTime;
+	if (ElapsedTime >= 2.5f) GetWorld()->GetFirstPlayerController()->ConsoleCommand("quit");
 }
 

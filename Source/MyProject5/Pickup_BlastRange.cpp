@@ -8,7 +8,8 @@
 
 APickup_BlastRange::APickup_BlastRange() : APickup()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Rock.SM_Rock'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Rock.SM_Rock'"));
 	if (StaticMeshAsset.Succeeded()) {
 		MeshComponent->SetWorldScale3D(FVector(0.2f));
 		MeshComponent->SetStaticMesh(StaticMeshAsset.Object);

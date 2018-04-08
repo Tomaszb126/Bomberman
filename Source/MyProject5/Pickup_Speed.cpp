@@ -9,7 +9,8 @@
 
 APickup_Speed::APickup_Speed() : APickup()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Bush.SM_Bush'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Bush.SM_Bush'"));
 	if (StaticMeshAsset.Succeeded()) {
 		MeshComponent->SetWorldScale3D(FVector(0.4f));
 		MeshComponent->SetStaticMesh(StaticMeshAsset.Object);
@@ -18,7 +19,7 @@ APickup_Speed::APickup_Speed() : APickup()
 
 void APickup_Speed::OnPlayerPickup(AMyPawn* Player)
 {
-	Player->OurMovementComponent->IncreaseSpeedMultiplier(0.5f);
+	Player->GetMyPawnMovementComponent()->IncreaseSpeedMultiplier(0.5f);
 	FString pickup = FString::Printf(TEXT("Picked up speed upgrade!"));
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, pickup);
 }

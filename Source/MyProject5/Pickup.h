@@ -19,6 +19,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	USceneComponent* Root;
+	UBoxComponent* Box;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -29,8 +31,6 @@ public:
 	virtual void OnPlayerPickup(AMyPawn* Player);
 
 	UFUNCTION()
-	void OnPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	USceneComponent* Root;
-	UBoxComponent* Box;
+	void OnPickup(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

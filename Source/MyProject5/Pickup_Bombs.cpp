@@ -9,7 +9,8 @@
 
 APickup_Bombs::APickup_Bombs() : APickup() 
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_MatPreviewMesh_02.SM_MatPreviewMesh_02'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_MatPreviewMesh_02.SM_MatPreviewMesh_02'"));
 	if (StaticMeshAsset.Succeeded()) {
 		MeshComponent->SetWorldScale3D(FVector(0.2f));
 		MeshComponent->SetStaticMesh(StaticMeshAsset.Object);

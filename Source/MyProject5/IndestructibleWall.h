@@ -10,6 +10,8 @@ UCLASS()
 class MYPROJECT5_API AIndestructibleWall : public AActor
 {
 	GENERATED_BODY()
+
+	UStaticMeshComponent* StaticMesh;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -22,7 +24,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UStaticMeshComponent* StaticMesh;
-	
 };

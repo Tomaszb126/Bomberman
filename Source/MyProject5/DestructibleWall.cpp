@@ -25,10 +25,12 @@ ADestructibleWall::ADestructibleWall()
 	//DestructibleComponent->OnComponentFracture.AddDynamic(this, &ADestructibleWall::SpawnPickup);
 
 	//Mesh
-	ConstructorHelpers::FObjectFinder<UDestructibleMesh> DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Cube_Brick_DM.Shape_Cube_Brick_DM'"));
-	if (DestructibleMeshAsset.Succeeded()) DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
-
-	DestructibleComponent->SetWorldScale3D(FVector(0.9f));
+	ConstructorHelpers::FObjectFinder<UDestructibleMesh> 
+		DestructibleMeshAsset(TEXT("DestructibleMesh'/Game/Shape_Cube_Brick_DM.Shape_Cube_Brick_DM'"));
+	if (DestructibleMeshAsset.Succeeded()) {
+		DestructibleComponent->SetSkeletalMesh(DestructibleMeshAsset.Object);
+		DestructibleComponent->SetWorldScale3D(FVector(0.9f));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -55,7 +57,7 @@ void ADestructibleWall::SpawnPickup(const FVector& HitPoint, const FVector& HitD
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters SpawnInfo;
 		int ShouldSpawn = FMath::RandRange(1, 100);
-		if (ShouldSpawn < 90) return ;
+		if (ShouldSpawn < 85) return ;
 		else if (ShouldSpawn >= 85 && ShouldSpawn <= 90)
 			GetWorld()->SpawnActor<APickup_BlastRange>(Position, Rotation, SpawnInfo);
 		else if (ShouldSpawn >= 90 && ShouldSpawn <=95)

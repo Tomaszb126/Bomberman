@@ -10,7 +10,15 @@ UCLASS()
 class MYPROJECT5_API AMapManager : public AActor
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY(EditAnywhere)
+	FVector MapOrigin = FVector(0.0f, 0.0f, 0.0f);
+	float TileSize = 100.0f;
+	UPROPERTY(EditAnywhere)
+	int MapSizeX = 15;
+	UPROPERTY(EditAnywhere)
+	int MapSizeY = 13;
+
 public:	
 	// Sets default values for this actor's properties
 	AMapManager();
@@ -22,11 +30,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	UPROPERTY(EditAnywhere)
-	FVector MapOrigin = FVector(0.0f, 0.0f, 0.0f);
-	float TileSize = 100.0f;
-	UPROPERTY(EditAnywhere)
-	int MapSizeX = 15;
-	UPROPERTY(EditAnywhere)
-	int MapSizeY = 13;
 };

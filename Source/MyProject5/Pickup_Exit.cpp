@@ -12,7 +12,8 @@
 
 APickup_Exit::APickup_Exit() : APickup()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_WindowFrame.SM_WindowFrame'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_WindowFrame.SM_WindowFrame'"));
 	if (StaticMeshAsset.Succeeded()) {
 		MeshComponent->SetWorldScale3D(FVector(0.2f));
 		MeshComponent->SetStaticMesh(StaticMeshAsset.Object);

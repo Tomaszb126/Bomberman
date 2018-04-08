@@ -13,7 +13,8 @@ class MYPROJECT5_API ADestructibleWall : public AActor
 
 
 	bool Fractured = false;
-	
+	UDestructibleComponent* DestructibleComponent;
+
 public:	
 	// Sets default values for this actor's properties
 	ADestructibleWall();
@@ -23,6 +24,8 @@ public:
 	UFUNCTION()
 	void SpawnExit(const FVector& HitPoint, const FVector& HitDirection);
 
+	UDestructibleComponent *GetDestructibleComponent() const { return DestructibleComponent; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,6 +33,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UDestructibleComponent* DestructibleComponent;
 };

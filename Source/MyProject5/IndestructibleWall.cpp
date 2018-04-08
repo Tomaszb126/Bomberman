@@ -15,10 +15,12 @@ AIndestructibleWall::AIndestructibleWall()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wall"));
 	RootComponent = StaticMesh;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		StaticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	if (StaticMeshAsset.Succeeded()) StaticMesh->SetStaticMesh(StaticMeshAsset.Object);
 
-	ConstructorHelpers::FObjectFinder<UMaterialInterface> StaticMeshMaterialAsset(TEXT("Material'/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New'"));
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> 
+		StaticMeshMaterialAsset(TEXT("Material'/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New'"));
 	if (StaticMeshMaterialAsset.Succeeded()) StaticMesh->SetMaterial(0, StaticMeshMaterialAsset.Object);
 }
 

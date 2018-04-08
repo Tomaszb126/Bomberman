@@ -11,18 +11,22 @@ class MYPROJECT5_API ABomb : public AActor
 {
 	GENERATED_BODY()
 	
+	int BlastDistance = 100.0f;
+	int Lifetime = 3;
+	float ElapsedTime = 0.0f;
+	bool Exploded = false;
+	bool CollisionOvelap = true;
+	UParticleSystemComponent* SparksComponent;
+	UDestructibleComponent* DestructibleComponent;
+	UParticleSystem* ParticleSystem;
+	UParticleSystem* SparksParticleSystem;
+
 public:	
 	// Sets default values for this actor's properties
 	ABomb();
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* mesh;
-
-	int BlastDistance = 100.0f;
-	int Lifetime = 3;
-	float ElapsedTime = 0.0f;
-	bool Exploded = false;
-	bool CollisionOvelap = true;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,6 +38,4 @@ public:
 	void BombExplode();
 	void IncreaseBlastDistance(int IncreaseBy) { BlastDistance += IncreaseBy; }
 	void CauseDamageInLine(FVector Start, FVector Direction);
-	UDestructibleComponent* DestructibleComponent;
-	UParticleSystem* ParticleSystem;
 };

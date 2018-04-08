@@ -14,7 +14,6 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/EngineTypes.h"
 #include "Engine.h"
-#include "Containers/UnrealString.h"
 #include "MyPawn.h"
 
 // Sets default values
@@ -37,10 +36,10 @@ ABomb::ABomb()
 
 	// Get Particle for explosion
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
-	if (ParticleAsset.Succeeded())
-	{
-		ParticleSystem = ParticleAsset.Object;
-	}
+	if (ParticleAsset.Succeeded()) ParticleSystem = ParticleAsset.Object;
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> SparksParticleAsset(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Sparks.P_Sparks'"));
+	if (SparksParticleAsset.Succeeded()) SparksParticleSystem = SparksParticleAsset.Object;
 }
 
 // Called when the game starts or when spawned
@@ -51,7 +50,10 @@ void ABomb::BeginPlay()
 	// Get blast distance from Player
 	TArray<AActor*> Pawns;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMyPawn::StaticClass(), Pawns);
-	BlastDistance = Cast<AMyPawn>(Pawns[0])->GetBombBlastRange();
+	if(Pawns.Num() > 0)
+		BlastDistance = Cast<AMyPawn>(Pawns[0])->GetBombBlastRange();
+
+	SparksComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SparksParticleSystem, GetActorLocation() + FVector(0.0f, 0.0f, 80.0f), FRotator::ZeroRotator, false);
 }
 
 // Called every frame
@@ -66,26 +68,19 @@ void ABomb::Tick(float DeltaTime)
 		CollisionOvelap = false;
 		DestructibleComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	}
-	/*
-	if (ElapsedTime >= 2) {
-		ConstructorHelpers::FObjectFinder<UMaterialInterface> DestructibleMeshAsset(TEXT("Material'/Game/M_Metal_Steel_Red.M_Metal_Steel_Red'"));
-		if (DestructibleMeshAsset.Succeeded()) {
-			DestructibleComponent->SetMaterial(0, DestructibleMeshAsset.Object);
-			DestructibleComponent->SetWorldScale3D(FVector(0.8f));
-		}
-	}
-	*/
 	if (ElapsedTime >= Lifetime && !Exploded) BombExplode();
-	if (ElapsedTime >= 4.0f) this->Destroy();
+	if (ElapsedTime >= 3.5f) this->Destroy();
 
 }
 void ABomb::BombExplode()
 {
 	// Create explosion
-	UE_LOG(LogTemp, Warning, TEXT("Granat dsadbum"));
+	//UE_LOG(LogTemp, Warning, TEXT("Bomb explode"));
 	// Destroy bomb itself
 	DestructibleComponent->ApplyDamage(100.0f, GetActorLocation(), FVector(0.0f, 0.0f, -1.0f), 1.0f);
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation() + FVector(0.0f, 0.0f, 40.0f), FRotator::ZeroRotator, true);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, 
+		GetActorLocation() + FVector(0.0f, 0.0f, 40.0f), FRotator::ZeroRotator, true);
+	SparksComponent->DestroyComponent();
 
 	FVector BombOrigin, BombExtent;
 	GetActorBounds(false, BombOrigin, BombExtent);
@@ -113,37 +108,48 @@ void ABomb::BombExplode()
 	CauseDamageInLine(Start, Direction);
 
 	Exploded = true;
-
 }
 
 void ABomb::CauseDamageInLine(FVector Start, FVector Direction)
 {
-	FHitResult Impact;
+	FHitResult Impact, ImpactLeft, ImpactRight;
 	FVector End = (Direction * BlastDistance) + Start;
 	FCollisionQueryParams CollisonParams;
 
+	// Central line
 	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, true);
 
 	// Hit first element on explosions way
 	bool isHit = GetWorld()->LineTraceSingleByChannel(Impact, Start, End, ECC_Visibility, CollisonParams);
-	if (isHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Bomb hit"));
-		if (Impact.bBlockingHit)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Actor hit: %s"), *Impact.GetActor()->GetName()));
+	if (isHit && Impact.bBlockingHit)
+			UGameplayStatics::ApplyPointDamage(Impact.GetActor(), 10.0f, GetActorLocation(), 
+				Impact, GetInstigatorController(), this, UDamageType::StaticClass());
 
-			FDamageEvent DamageEvent;
-			UGameplayStatics::ApplyPointDamage(Impact.GetActor(), 10.0f, GetActorLocation(), Impact, GetInstigatorController(), this, UDamageType::StaticClass());
-		}
-	}
+	// Side lines to cover everything
+	FVector DirectionX = Direction.X != 0.0f ? FVector(0.0f, 30.0f, 0.0f) : FVector(30.0f, 0.0f, 0.0f);
+	//DrawDebugLine(GetWorld(), Start + DirectionX, End + DirectionX, FColor::Red, true);
+	//DrawDebugLine(GetWorld(), Start + -DirectionX, End + -DirectionX, FColor::Red, true);
+	
+	bool isHitLeft = GetWorld()->LineTraceSingleByChannel(ImpactLeft, Start + DirectionX, 
+		End + DirectionX, ECC_Visibility, CollisonParams);
+	if (isHitLeft && ImpactLeft.bBlockingHit)
+			UGameplayStatics::ApplyPointDamage(ImpactLeft.GetActor(), 10.0f, GetActorLocation(),
+				ImpactLeft, GetInstigatorController(), this, UDamageType::StaticClass());
+
+	bool isHitRight = GetWorld()->LineTraceSingleByChannel(ImpactRight, Start + -DirectionX, 
+		End + -DirectionX, ECC_Visibility, CollisonParams);
+	if (isHitRight && ImpactRight.bBlockingHit)
+			UGameplayStatics::ApplyPointDamage(ImpactRight.GetActor(), 10.0f, GetActorLocation(),
+				ImpactRight, GetInstigatorController(), this, UDamageType::StaticClass());
+	
 
 	// Create explosion particles along blast way
 	for (int i = 0; i < BlastDistance/100; i++) {
-		UE_LOG(LogTemp, Warning, TEXT("explosion boom, distance: %f"), Impact.Distance);
-		// Dont create particles after it hit something
+		//UE_LOG(LogTemp, Warning, TEXT("explosion boom, distance: %f"), Impact.Distance);
+		// Dont create particles after central line hit something
 		if(Impact.Distance <=0 || Impact.Distance >= i*100)
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation() + (Direction*(i+1)*100) + FVector(0.0f,0.0f,40.0f), FRotator::ZeroRotator, true);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, 
+				GetActorLocation() + (Direction*(i+1)*100) + FVector(0.0f,0.0f,40.0f), FRotator::ZeroRotator, true);
 	}
 }
 

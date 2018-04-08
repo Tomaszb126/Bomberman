@@ -10,7 +10,8 @@ UCLASS()
 class MYPROJECT5_API AEndScreenWorldManager : public AActor
 {
 	GENERATED_BODY()
-	
+
+	float ElapsedTime = 0.0f;
 public:	
 	// Sets default values for this actor's properties
 	AEndScreenWorldManager();
@@ -22,7 +23,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void EndGame() { FGenericPlatformMisc::RequestExit(true); }
 	
 };

@@ -29,8 +29,10 @@ AMyPawn::AMyPawn()
 	SphereComponent->InitSphereRadius(40.0f);
 	SphereComponent->SetCollisionProfileName(TEXT("Pawn"));
 	//SphereComponent->SetWorldScale3D(FVector(0.8f));
+
+	// Function for taking damage 
 	this->OnTakeAnyDamage.AddDynamic(this, &AMyPawn::PlayerGetHit);
-		//FTakeAnyDamageSignature, AActor*, DamagedActor, float, Damage, const class UDamageType*, DamageType, class AController*, InstigatedBy, AActor*, DamageCauser
+
 	// CameraComponent
 	UCameraComponent* OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Our Camera"));
 	OurCamera->SetupAttachment(RootComponent);
@@ -41,7 +43,8 @@ AMyPawn::AMyPawn()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Our Mesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> PawnMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> 
+		PawnMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	if (PawnMeshAsset.Succeeded()) {
 		StaticMesh->SetStaticMesh(PawnMeshAsset.Object);
 		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
@@ -80,10 +83,10 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	InputComponent->BindAxis("MoveRight", this, &AMyPawn::MoveRight);
 
 	InputComponent->BindAction("SpawnBomb", IE_Pressed, this, &AMyPawn::PlaceBomb);
-
+	InputComponent->BindAction("QuitGame", IE_Pressed, this, &AMyPawn::QuitGame);
 }
 
-UPawnMovementComponent* AMyPawn::GetMovementComponent() const
+UMyPawnMovementComponent* AMyPawn::GetMyPawnMovementComponent() const
 {
 	return OurMovementComponent;
 }
@@ -115,17 +118,17 @@ void AMyPawn::PlaceBomb()
 	FVector BombPosition = FVector(0.0f, 0.0f, -50.0f) + GetActorLocation();
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	//ABomb* NewBomb = GetWorld()->SpawnActor<ABomb>(BombPosition, Rotation, SpawnInfo);
-	//NewBomb->IncreaseBlastDistance(1);
 	GetWorld()->SpawnActor<ABomb>(BombPosition, Rotation, SpawnInfo);
-
 }
 
-void AMyPawn::PlayerGetHit(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+void AMyPawn::PlayerGetHit(AActor* DamagedActor, float Damage, 
+	const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player damaged"));
 
 	FString Msg = FString::Printf(TEXT("Player killed!"));
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, Msg);
+
+	//Switch map
 	UGameplayStatics::OpenLevel(this, "GameEndMap");
 }
